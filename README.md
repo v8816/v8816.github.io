@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="light dark">
     <title>Генератор сообщений</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -13,13 +14,40 @@
             -webkit-tap-highlight-color: transparent;
         }
         
+        :root {
+            /* Light theme defaults */
+            --bg-color: #f5f5f5;
+            --text-color: #000000;
+            --secondary-bg: #ffffff;
+            --button-color: #2481cc;
+            --button-text: #ffffff;
+            --hint-color: #666666;
+            --border-color: rgba(0,0,0,0.1);
+            --card-shadow: rgba(0,0,0,0.08);
+        }
+        
+        /* Dark theme detection */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --secondary-bg: #2d2d2d;
+                --button-color: #3390ec;
+                --button-text: #ffffff;
+                --hint-color: #888888;
+                --border-color: rgba(255,255,255,0.1);
+                --card-shadow: rgba(0,0,0,0.3);
+            }
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, var(--bg-color));
+            color: var(--tg-theme-text-color, var(--text-color));
             min-height: 100vh;
             padding: 16px;
             padding-bottom: 80px;
+            transition: background 0.3s, color 0.3s;
         }
         
         .header {
@@ -35,17 +63,17 @@
         
         .header p {
             font-size: 14px;
-            color: var(--tg-theme-hint-color, #666);
+            color: var(--tg-theme-hint-color, var(--hint-color));
         }
         
         .stats-bar {
-            background: var(--tg-theme-secondary-bg-color, #fff);
+            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
             display: flex;
             justify-content: space-around;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px var(--card-shadow);
         }
         
         .stat-item {
@@ -55,27 +83,28 @@
         .stat-value {
             font-size: 24px;
             font-weight: 700;
-            color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-color, var(--button-color));
         }
         
         .stat-label {
             font-size: 12px;
-            color: var(--tg-theme-hint-color, #666);
+            color: var(--tg-theme-hint-color, var(--hint-color));
             margin-top: 4px;
         }
         
         .message-card {
-            background: var(--tg-theme-secondary-bg-color, #fff);
+            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px var(--card-shadow);
             position: relative;
+            border: 1px solid var(--border-color);
         }
         
         .message-label {
             font-size: 12px;
-            color: var(--tg-theme-hint-color, #666);
+            color: var(--tg-theme-hint-color, var(--hint-color));
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
@@ -84,7 +113,7 @@
         .message-text {
             font-size: 17px;
             line-height: 1.5;
-            color: var(--tg-theme-text-color, #333);
+            color: var(--tg-theme-text-color, var(--text-color));
             word-wrap: break-word;
         }
         
@@ -105,8 +134,8 @@
         }
         
         .btn-primary {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
+            background: var(--tg-theme-button-color, var(--button-color));
+            color: var(--tg-theme-button-text-color, var(--button-text));
         }
         
         .btn-primary:active {
@@ -119,22 +148,28 @@
             color: #fff;
         }
         
+        .btn-success:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
         .btn-secondary {
-            background: var(--tg-theme-secondary-bg-color, #e5e5e5);
-            color: var(--tg-theme-text-color, #333);
+            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
+            color: var(--tg-theme-text-color, var(--text-color));
+            border: 1px solid var(--border-color);
         }
         
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--tg-theme-hint-color, #666);
+            color: var(--tg-theme-hint-color, var(--hint-color));
         }
         
         .spinner {
             width: 40px;
             height: 40px;
             border: 3px solid var(--tg-theme-hint-color, #ddd);
-            border-top-color: var(--tg-theme-button-color, #2481cc);
+            border-top-color: var(--tg-theme-button-color, var(--button-color));
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -156,24 +191,6 @@
         
         .hidden {
             display: none !important;
-        }
-        
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            padding: 12px 16px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            border-top: 1px solid rgba(0,0,0,0.1);
-            display: flex;
-            gap: 12px;
-        }
-        
-        .bottom-bar .btn {
-            margin-bottom: 0;
-            flex: 1;
         }
     </style>
 </head>
@@ -237,13 +254,28 @@
         tg.ready();
         tg.expand();
         
-        // Устанавливаем цвета темы
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#f5f5f5');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#fff');
-        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#fff');
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#666');
+        // Устанавливаем цвета темы из Telegram
+        function applyTheme() {
+            const theme = tg.themeParams;
+            const root = document.documentElement;
+            
+            if (theme.bg_color) root.style.setProperty('--tg-theme-bg-color', theme.bg_color);
+            if (theme.text_color) root.style.setProperty('--tg-theme-text-color', theme.text_color);
+            if (theme.secondary_bg_color) root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color);
+            if (theme.button_color) root.style.setProperty('--tg-theme-button-color', theme.button_color);
+            if (theme.button_text_color) root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color);
+            if (theme.hint_color) root.style.setProperty('--tg-theme-hint-color', theme.hint_color);
+            
+            // Устанавливаем цвет header Telegram
+            tg.setHeaderColor(theme.bg_color || '#f5f5f5');
+            tg.setBackgroundColor(theme.bg_color || '#f5f5f5');
+        }
+        
+        // Применяем тему при загрузке
+        applyTheme();
+        
+        // Слушаем изменения темы
+        tg.onEvent('themeChanged', applyTheme);
         
         // Данные пользователя
         let currentMessage = '';
@@ -253,7 +285,7 @@
             totalMessages: 0
         };
         
-        // Fallback шаблоны (если бот не отвечает)
+        // Fallback шаблоны
         const fallbackTemplates = [
             "Ваш профиль понравился нашей компании, приготовили для вас предложение - ждем в ЛС 😊",
             "Наша организация оценила ваш профиль, есть интересное предложение - напишите нам в лс 💎",
@@ -265,7 +297,7 @@
             "Ваш профиль привлек внимание, есть предложение - напишите нам в ЛС 💌",
         ];
         
-        // Загрузка статистики из initData
+        // Загрузка статистики
         function loadStats() {
             try {
                 const initData = tg.initDataUnsafe;
@@ -281,7 +313,7 @@
             }
         }
         
-        // Обновление отображения статистики
+        // Обновление статистики
         function updateStatsDisplay() {
             document.getElementById('todayTouches').textContent = stats.todayTouches;
             document.getElementById('totalTouches').textContent = stats.totalTouches;
@@ -293,12 +325,10 @@
             showScreen('loadingScreen');
             
             try {
-                // Пытаемся получить сообщение от бота через sendData
-                tg.sendData(JSON.stringify({
-                    action: 'generate'
-                }));
+                // Сообщаем боту что нужно сгенерировать
+                tg.sendData(JSON.stringify({ action: 'generate' }));
                 
-                // Ждем ответа (макс 5 секунд)
+                // Ждем немного
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 
                 // Если нет ответа, используем fallback
@@ -309,7 +339,6 @@
                 showMessage(currentMessage);
                 
             } catch (e) {
-                // Fallback
                 currentMessage = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)];
                 showMessage(currentMessage);
             }
@@ -331,9 +360,10 @@
             try {
                 await navigator.clipboard.writeText(currentMessage);
             } catch (e) {
-                // Fallback
                 const textarea = document.createElement('textarea');
                 textarea.value = currentMessage;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
@@ -352,7 +382,7 @@
                 message: currentMessage
             }));
             
-            // Через 1 секунду генерируем новое
+            // Через секунду генерируем новое
             setTimeout(() => {
                 stats.todayTouches++;
                 stats.totalTouches++;
@@ -367,7 +397,6 @@
             document.getElementById('mainScreen').classList.add('hidden');
             document.getElementById('loadingScreen').classList.add('hidden');
             document.getElementById('successScreen').classList.add('hidden');
-            
             document.getElementById(screenId).classList.remove('hidden');
         }
         
@@ -388,7 +417,7 @@
             }
         });
         
-        // Закрытие по кнопке назад
+        // Кнопка назад
         tg.BackButton.onClick(function() {
             tg.close();
         });
@@ -396,7 +425,7 @@
         // Инициализация
         loadStats();
         
-        // Если есть сообщение в параметре URL, показываем его
+        // Если есть сообщение в URL
         const urlParams = new URLSearchParams(window.location.search);
         const msgFromUrl = urlParams.get('msg');
         if (msgFromUrl) {
