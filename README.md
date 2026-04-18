@@ -199,7 +199,7 @@
     <div id="mainScreen">
         <div class="header">
             <h1>🤖 Генератор сообщений</h1>
-            <p>AI создаёт уникальные продающие сообщения</p>
+            <p>AI создаёт уникальные сообщения</p>
         </div>
         
         <div class="stats-bar">
