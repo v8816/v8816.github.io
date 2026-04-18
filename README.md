@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,6 @@
         }
         
         :root {
-            /* Light theme defaults */
             --bg-color: #f5f5f5;
             --text-color: #000000;
             --secondary-bg: #ffffff;
@@ -24,9 +23,10 @@
             --hint-color: #666666;
             --border-color: rgba(0,0,0,0.1);
             --card-shadow: rgba(0,0,0,0.08);
+            --error-color: #ff4444;
+            --success-color: #4CAF50;
         }
         
-        /* Dark theme detection */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #1a1a1a;
@@ -46,7 +46,7 @@
             color: var(--tg-theme-text-color, var(--text-color));
             min-height: 100vh;
             padding: 16px;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
             transition: background 0.3s, color 0.3s;
         }
         
@@ -98,8 +98,11 @@
             padding: 20px;
             margin-bottom: 16px;
             box-shadow: 0 2px 8px var(--card-shadow);
-            position: relative;
             border: 1px solid var(--border-color);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .message-label {
@@ -115,6 +118,11 @@
             line-height: 1.5;
             color: var(--tg-theme-text-color, var(--text-color));
             word-wrap: break-word;
+        }
+        
+        .message-placeholder {
+            color: var(--tg-theme-hint-color, var(--hint-color));
+            font-style: italic;
         }
         
         .btn {
@@ -133,22 +141,27 @@
             gap: 8px;
         }
         
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
         .btn-primary {
             background: var(--tg-theme-button-color, var(--button-color));
             color: var(--tg-theme-button-text-color, var(--button-text));
         }
         
-        .btn-primary:active {
+        .btn-primary:active:not(:disabled) {
             transform: scale(0.98);
             opacity: 0.9;
         }
         
         .btn-success {
-            background: #4CAF50;
+            background: var(--success-color);
             color: #fff;
         }
         
-        .btn-success:active {
+        .btn-success:active:not(:disabled) {
             transform: scale(0.98);
             opacity: 0.9;
         }
@@ -157,6 +170,16 @@
             background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
             color: var(--tg-theme-text-color, var(--text-color));
             border: 1px solid var(--border-color);
+        }
+        
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--error-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            color: var(--error-color);
+            text-align: center;
         }
         
         .loading {
@@ -192,6 +215,81 @@
         .hidden {
             display: none !important;
         }
+        
+        .settings-section {
+            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .settings-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--tg-theme-text-color, var(--text-color));
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--tg-theme-bg-color, var(--bg-color));
+            color: var(--tg-theme-text-color, var(--text-color));
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color, var(--button-color));
+        }
+        
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .toggle-label {
+            font-size: 15px;
+            color: var(--tg-theme-text-color, var(--text-color));
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: var(--tg-theme-hint-color, #ccc);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: var(--tg-theme-button-color, var(--button-color));
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
     </style>
 </head>
 <body>
@@ -199,7 +297,7 @@
     <div id="mainScreen">
         <div class="header">
             <h1>🤖 Генератор сообщений</h1>
-            <p>AI создаёт уникальные сообщения</p>
+            <p>NVIDIA AI + Real-time генерация</p>
         </div>
         
         <div class="stats-bar">
@@ -217,17 +315,35 @@
             </div>
         </div>
         
+        <!-- API Key настройки -->
+        <div class="settings-section" id="apiSettings">
+            <div class="settings-title">🔑 Настройки NVIDIA API</div>
+            <input type="password" class="input-field" id="apiKeyInput" placeholder="Введите NVIDIA API Key">
+            <div class="toggle-row">
+                <span class="toggle-label">Сохранить ключ</span>
+                <div class="toggle-switch" id="saveKeyToggle" onclick="toggleSaveKey()"></div>
+            </div>
+        </div>
+        
+        <div id="errorContainer"></div>
+        
         <div class="message-card">
             <div class="message-label">💬 Сообщение для отправки</div>
-            <div class="message-text" id="messageText">Нажмите "Сгенерировать" чтобы получить сообщение</div>
+            <div class="message-text" id="messageText">
+                <span class="message-placeholder">Нажмите "Сгенерировать" для создания сообщения через NVIDIA AI</span>
+            </div>
         </div>
         
         <button class="btn btn-primary" id="generateBtn" onclick="generateMessage()">
-            ✨ Сгенерировать сообщение
+            ✨ Сгенерировать (NVIDIA AI)
         </button>
         
-        <button class="btn btn-success hidden" id="copyBtn" onclick="copyAndNext()">
+        <button class="btn btn-success hidden" id="copyBtn" onclick="copyAndNext()" disabled>
             📋 Копировать и получить новое
+        </button>
+        
+        <button class="btn btn-secondary" id="syncBtn" onclick="syncWithBot()">
+            🔄 Синхронизировать с ботом
         </button>
     </div>
     
@@ -235,7 +351,8 @@
     <div id="loadingScreen" class="hidden">
         <div class="loading">
             <div class="spinner"></div>
-            <p>Генерирую сообщение через AI...</p>
+            <p id="loadingText">Подключаемся к NVIDIA API...</p>
+            <p style="font-size: 12px; color: var(--hint-color); margin-top: 8px;">Модель: nemotron-3-super-120b-a12b</p>
         </div>
     </div>
     
@@ -254,7 +371,21 @@
         tg.ready();
         tg.expand();
         
-        // Устанавливаем цвета темы из Telegram
+        // Конфигурация
+        const NVIDIA_API_URL = 'https://integrate.api.nvidia.com/v1';
+        const MODEL = 'nvidia/nemotron-3-super-120b-a12b';
+        
+        // Состояние
+        let currentMessage = '';
+        let stats = {
+            todayTouches: 0,
+            totalTouches: 0,
+            totalMessages: 0
+        };
+        let apiKey = localStorage.getItem('nvidia_api_key') || '';
+        let saveKeyEnabled = localStorage.getItem('save_api_key') === 'true';
+        
+        // Применение темы
         function applyTheme() {
             const theme = tg.themeParams;
             const root = document.documentElement;
@@ -266,97 +397,194 @@
             if (theme.button_text_color) root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color);
             if (theme.hint_color) root.style.setProperty('--tg-theme-hint-color', theme.hint_color);
             
-            // Устанавливаем цвет header Telegram
             tg.setHeaderColor(theme.bg_color || '#f5f5f5');
             tg.setBackgroundColor(theme.bg_color || '#f5f5f5');
         }
         
-        // Применяем тему при загрузке
         applyTheme();
-        
-        // Слушаем изменения темы
         tg.onEvent('themeChanged', applyTheme);
         
-        // Данные пользователя
-        let currentMessage = '';
-        let stats = {
-            todayTouches: 0,
-            totalTouches: 0,
-            totalMessages: 0
-        };
+        // Инициализация UI
+        function initUI() {
+            document.getElementById('apiKeyInput').value = apiKey;
+            if (saveKeyEnabled && apiKey) {
+                document.getElementById('saveKeyToggle').classList.add('active');
+            }
+            
+            // Загружаем статистику из localStorage
+            const savedStats = localStorage.getItem('stats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+            
+            // Загружаем статистику от бота
+            loadStatsFromBot();
+        }
         
-        // Fallback шаблоны
-        const fallback_templates = [
-        "Ваш профиль понравился нашей компании, приготовили для вас предложение - пишите в личные сообщения 😊",
-        "Наша организация оценила ваш профиль, есть интересное предложение - напишите в директ 💎",
-        "Ваш профиль понравился нашей компании, есть выгодное предложение - пишите в личные сообщения ✨",
-        "Наша компания оценила ваш профиль, приготовили специальное предложение - пишите в директ 🌟",
-        "Ваш профиль в понравился нашей компании, есть предложение для вас - напишите в личные сообщения 🔥",
-        "Наша организация оценила ваш профиль, приглашаем к сотрудничеству - пишите в директ 💫",
-        "Нам понравился ваш профиль в компании, есть интересное предложение - пишите в личные сообщения 🎯",
-        "Ваш профиль привлек внимание нашей компании, есть предложение - напишите в личные сообщения 💌",
-        ];
+        // Переключение сохранения ключа
+        function toggleSaveKey() {
+            saveKeyEnabled = !saveKeyEnabled;
+            const toggle = document.getElementById('saveKeyToggle');
+            toggle.classList.toggle('active', saveKeyEnabled);
+            localStorage.setItem('save_api_key', saveKeyEnabled);
+            
+            if (saveKeyEnabled) {
+                localStorage.setItem('nvidia_api_key', document.getElementById('apiKeyInput').value);
+            } else {
+                localStorage.removeItem('nvidia_api_key');
+            }
+        }
         
-        // Загрузка статистики
-        function loadStats() {
+        // Сохранение API ключа
+        document.getElementById('apiKeyInput').addEventListener('input', (e) => {
+            apiKey = e.target.value;
+            if (saveKeyEnabled) {
+                localStorage.setItem('nvidia_api_key', apiKey);
+            }
+        });
+        
+        // Загрузка статистики от бота
+        function loadStatsFromBot() {
             try {
                 const initData = tg.initDataUnsafe;
                 if (initData.start_param) {
                     const params = JSON.parse(decodeURIComponent(initData.start_param));
                     if (params.stats) {
-                        stats = params.stats;
+                        stats = { ...stats, ...params.stats };
+                        saveStats();
                         updateStatsDisplay();
                     }
                 }
             } catch (e) {
-                console.log('Нет данных статистики');
+                console.log('Нет данных от бота');
             }
         }
         
-        // Обновление статистики
+        // Сохранение статистики
+        function saveStats() {
+            localStorage.setItem('stats', JSON.stringify(stats));
+        }
+        
+        // Обновление отображения статистики
         function updateStatsDisplay() {
             document.getElementById('todayTouches').textContent = stats.todayTouches;
             document.getElementById('totalTouches').textContent = stats.totalTouches;
             document.getElementById('totalMessages').textContent = stats.totalMessages;
         }
         
-        // Генерация сообщения
+        // Показать ошибку
+        function showError(text) {
+            const container = document.getElementById('errorContainer');
+            container.innerHTML = `<div class="error-message">⚠️ ${text}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+        
+        // РЕАЛЬНАЯ генерация через NVIDIA API
         async function generateMessage() {
+            if (!apiKey) {
+                showError('Введите NVIDIA API Key в настройках!');
+                document.getElementById('apiSettings').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            
             showScreen('loadingScreen');
+            document.getElementById('loadingText').textContent = 'Подключаемся к NVIDIA API...';
+            
+            const prompt = `Напиши ОЧЕНЬ КОРОТКОЕ сообщение на русском языке (максимум 20 слов).
+
+ОБЯЗАТЕЛЬНАЯ структура:
+1. НАША КОМПАНИЯ оценила профиль
+2. Есть предложение  
+3. Призыв написать В ЛИЧНЫЕ СООБЩЕНИЯ (или "в директ")
+4. Один смайл в конце
+
+ПРАВИЛЬНЫЕ примеры:
+"Ваш профиль понравился нашей компании, приготовили для вас предложение - пишите в личные сообщения 😊"
+"Наша компания оценила ваш профиль, есть интересное предложение - напишите в директ 💎"  
+"Ваш профиль понравился нашей компании, есть выгодное предложение - пишите в личные сообщения ✨"
+
+ОШИБКИ которые НЕЛЬЗЯ:
+- "организация" - пиши только "компания"
+- "привлек внимание" без указания чьё (нашей компании)
+- "пишите в личные" без слова "сообщения"
+
+Всегда пиши: "наша компания"!
+
+Вариант:`;
             
             try {
-                // Сообщаем боту что нужно сгенерировать
-                tg.sendData(JSON.stringify({ action: 'generate' }));
+                document.getElementById('loadingText').textContent = 'Генерация через nemotron-3-super-120b-a12b...';
                 
-                // Ждем немного
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                const response = await fetch(`${NVIDIA_API_URL}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: MODEL,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.8,
+                        top_p: 0.9,
+                        max_tokens: 100,
+                        stream: false
+                    })
+                });
                 
-                // Если нет ответа, используем fallback
-                if (!currentMessage) {
-                    currentMessage = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)];
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || `HTTP ${response.status}`);
                 }
                 
+                const data = await response.json();
+                let message = data.choices[0].message.content.trim();
+                
+                // Очистка
+                message = message.replace(/\*\*/g, '').replace(/\*/g, '').replace(/__/g, '');
+                message = message.replace(/"/g, '').replace(/'/g, '').trim();
+                message = message.replace(/\s+/g, ' ');
+                
+                // Проверка смайла
+                const emojis = ['😊', '💎', '✨', '🌟', '🔥', '💫', '🚀', '⭐', '🎯', '💡', '💌', '😍', '🤩', '💖', '🎁', '🏆'];
+                const hasEmoji = emojis.some(e => message.slice(-10).includes(e));
+                if (!hasEmoji) {
+                    message += ` ${emojis[Math.floor(Math.random() * emojis.length)]}`;
+                }
+                
+                currentMessage = message;
+                stats.totalMessages++;
+                saveStats();
+                updateStatsDisplay();
+                
+                // Отправляем статистику боту
+                syncWithBot();
+                
                 showMessage(currentMessage);
                 
-            } catch (e) {
-                currentMessage = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)];
-                showMessage(currentMessage);
+            } catch (error) {
+                console.error('Ошибка NVIDIA API:', error);
+                showError(`Ошибка API: ${error.message}. Проверьте ключ.`);
+                showScreen('mainScreen');
             }
         }
         
         // Показать сообщение
         function showMessage(message) {
             document.getElementById('messageText').textContent = message;
+            document.getElementById('messageText').classList.remove('message-placeholder');
             document.getElementById('generateBtn').classList.add('hidden');
             document.getElementById('copyBtn').classList.remove('hidden');
+            document.getElementById('copyBtn').disabled = false;
             showScreen('mainScreen');
         }
         
-        // Копировать и получить новое
+        // Копировать и следующее
         async function copyAndNext() {
             if (!currentMessage) return;
             
-            // Копируем в буфер
+            document.getElementById('copyBtn').disabled = true;
+            
             try {
                 await navigator.clipboard.writeText(currentMessage);
             } catch (e) {
@@ -370,68 +598,67 @@
                 document.body.removeChild(textarea);
             }
             
-            // Вибрация
             tg.HapticFeedback.notificationOccurred('success');
             
-            // Показываем успех
-            showScreen('successScreen');
+            // Обновляем статистику
+            stats.todayTouches++;
+            stats.totalTouches++;
+            saveStats();
+            updateStatsDisplay();
             
-            // Уведомляем бота
+            // Отправляем боту
             tg.sendData(JSON.stringify({
                 action: 'copied',
-                message: currentMessage
+                message: currentMessage,
+                stats: stats
             }));
             
-            // Через секунду генерируем новое
+            showScreen('successScreen');
+            
             setTimeout(() => {
-                stats.todayTouches++;
-                stats.totalTouches++;
-                updateStatsDisplay();
                 currentMessage = '';
-                generateMessage();
-            }, 1000);
+                document.getElementById('generateBtn').classList.remove('hidden');
+                document.getElementById('copyBtn').classList.add('hidden');
+                document.getElementById('messageText').innerHTML = '<span class="message-placeholder">Нажмите "Сгенерировать" для создания сообщения через NVIDIA AI</span>';
+                showScreen('mainScreen');
+            }, 1500);
+        }
+        
+        // Синхронизация с ботом
+        function syncWithBot() {
+            tg.sendData(JSON.stringify({
+                action: 'sync',
+                stats: stats
+            }));
         }
         
         // Показать экран
         function showScreen(screenId) {
-            document.getElementById('mainScreen').classList.add('hidden');
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('successScreen').classList.add('hidden');
+            ['mainScreen', 'loadingScreen', 'successScreen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
             document.getElementById(screenId).classList.remove('hidden');
         }
         
-        // Слушаем сообщения от бота
-        tg.onEvent('message', function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                if (data.message) {
-                    currentMessage = data.message;
-                    if (data.stats) {
-                        stats = data.stats;
-                        updateStatsDisplay();
-                    }
-                    showMessage(currentMessage);
-                }
-            } catch (e) {
-                console.log('Неизвестное сообщение от бота');
-            }
-        });
-        
         // Кнопка назад
-        tg.BackButton.onClick(function() {
-            tg.close();
-        });
+        tg.BackButton.onClick(() => tg.close());
         
         // Инициализация
-        loadStats();
+        initUI();
         
-        // Если есть сообщение в URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const msgFromUrl = urlParams.get('msg');
-        if (msgFromUrl) {
-            currentMessage = decodeURIComponent(msgFromUrl);
-            showMessage(currentMessage);
-        }
+        // Слушаем сообщения от бота
+        tg.onEvent('message', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.stats) {
+                    stats = { ...stats, ...data.stats };
+                    saveStats();
+                    updateStatsDisplay();
+                }
+            } catch (e) {
+                console.log('Сообщение от бота:', event.data);
+            }
+        });
     </script>
 </body>
 </html>
