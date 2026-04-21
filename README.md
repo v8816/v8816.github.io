@@ -3,447 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="color-scheme" content="light dark">
-    <title>Генератор сообщений</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>TikTok Messenger</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        :root {
-            --bg-color: #f5f5f5;
-            --text-color: #000000;
-            --secondary-bg: #ffffff;
-            --button-color: #2481cc;
-            --button-text: #ffffff;
-            --hint-color: #666666;
-            --border-color: rgba(0,0,0,0.1);
-            --card-shadow: rgba(0,0,0,0.08);
-            --error-color: #ff4444;
-            --success-color: #4CAF50;
-        }
-        
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #1a1a1a;
-                --text-color: #ffffff;
-                --secondary-bg: #2d2d2d;
-                --button-color: #3390ec;
-                --button-text: #ffffff;
-                --hint-color: #888888;
-                --border-color: rgba(255,255,255,0.1);
-                --card-shadow: rgba(0,0,0,0.3);
-            }
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, var(--bg-color));
-            color: var(--tg-theme-text-color, var(--text-color));
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
             min-height: 100vh;
-            padding: 16px;
-            padding-bottom: 100px;
-            transition: background 0.3s, color 0.3s;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .header p {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, var(--hint-color));
-        }
-        
-        .stats-bar {
-            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 1px 3px var(--card-shadow);
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--tg-theme-button-color, var(--button-color));
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, var(--hint-color));
-            margin-top: 4px;
-        }
-        
-        .message-card {
-            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
-            border-radius: 16px;
+            color: #fff;
             padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px var(--card-shadow);
-            border: 1px solid var(--border-color);
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
         
-        .message-label {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, var(--hint-color));
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
         }
         
-        .message-text {
-            font-size: 17px;
-            line-height: 1.5;
-            color: var(--tg-theme-text-color, var(--text-color));
-            word-wrap: break-word;
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 3px;
+            color: #ff0050;
         }
         
-        .message-placeholder {
-            color: var(--tg-theme-hint-color, var(--hint-color));
-            font-style: italic;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 25px;
         }
         
-        .btn {
-            width: 100%;
-            padding: 16px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
+        .stats {
+            text-align: center;
+            padding: 12px;
+            background: #161616;
             border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff0050;
+        }
+        
+        .stats-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .progress {
+            text-align: center;
+            padding: 10px;
+            background: #161616;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .progress span {
+            color: #ff0050;
+            font-weight: bold;
+        }
+        
+        .message-box {
+            background: #161616;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #fff;
+            border: 1px solid #222;
         }
         
-        .btn:disabled {
-            opacity: 0.6;
+        .message-box.empty {
+            color: #444;
+        }
+        
+        .btn-main {
+            width: 100%;
+            padding: 20px;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff0050, #ff4080);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-main:hover, .btn-main:active {
+            opacity: 0.9;
+            transform: scale(0.99);
+        }
+        
+        .btn-main:disabled {
+            background: #333;
+            color: #666;
             cursor: not-allowed;
         }
         
-        .btn-primary {
-            background: var(--tg-theme-button-color, var(--button-color));
-            color: var(--tg-theme-button-text-color, var(--button-text));
+        .btn-reset {
+            width: 100%;
+            padding: 14px;
+            font-size: 13px;
+            border: 1px solid #333;
+            border-radius: 12px;
+            cursor: pointer;
+            background: transparent;
+            color: #666;
+            margin-top: 10px;
         }
         
-        .btn-primary:active:not(:disabled) {
-            transform: scale(0.98);
-            opacity: 0.9;
+        .btn-reset:hover {
+            border-color: #ff0050;
+            color: #ff0050;
         }
         
-        .btn-success {
-            background: var(--success-color);
+        .emoji-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+        
+        .emoji-btn {
+            background: #222;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        
+        .emoji-btn:hover, .emoji-btn:active {
+            background: #ff0050;
+            transform: scale(1.1);
+        }
+        
+        .copied-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #00d26a;
             color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.25s;
+            z-index: 1000;
         }
         
-        .btn-success:active:not(:disabled) {
-            transform: scale(0.98);
-            opacity: 0.9;
+        .copied-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .limit-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #ff0050;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.25s;
+            z-index: 1000;
         }
         
-        .btn-secondary {
-            background: var(--tg-theme-secondary-bg-color, var(--secondary-bg));
-            color: var(--tg-theme-text-color, var(--text-color));
-            border: 1px solid var(--border-color);
+        .limit-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .history {
+            margin-top: 25px;
         }
         
-        .error-message {
-            background: rgba(255, 68, 68, 0.1);
-            border: 1px solid var(--error-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            color: var(--error-color);
-            text-align: center;
+        .history h3 {
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
-        .info-box {
-            background: rgba(52, 152, 219, 0.1);
-            border: 1px solid var(--tg-theme-button-color, var(--button-color));
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            text-align: center;
+        .history-item {
+            background: #161616;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--tg-theme-hint-color, var(--hint-color));
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--tg-theme-hint-color, #ddd);
-            border-top-color: var(--tg-theme-button-color, var(--button-color));
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .success-animation {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .success-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-        
-        .hidden {
-            display: none !important;
+        .history-item .time {
+            font-size: 11px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <!-- Главный экран -->
-    <div id="mainScreen">
-        <div class="header">
-            <h1>🤖 Генератор сообщений</h1>
-            <p>NVIDIA nemotron-3-super-120b-a12b</p>
+    <div class="container">
+        <h1>🎯 TikTok Messenger</h1>
+        <p class="subtitle">Готовые сообщения для рекрутинга</p>
+        
+        <div class="stats">
+            <div class="stats-number" id="msgCount">0</div>
+            <div class="stats-label">отправлено сегодня</div>
         </div>
         
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value" id="todayTouches">0</div>
-                <div class="stat-label">Сегодня</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="totalTouches">0</div>
-                <div class="stat-label">Всего</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="totalMessages">0</div>
-                <div class="stat-label">Сообщений</div>
-            </div>
+        <div class="progress">Осталось: <span id="remainingCount">0</span>/<span id="totalCount">0</span> уникальных сообщений</div>
+        
+        <label style="display: block; font-size: 11px; color: #666; margin-bottom: 8px;">Добавить смайлик:</label>
+        
+        <div class="emoji-row">
+            <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
+            <button class="emoji-btn" onclick="addEmoji('👋')">👋</button>
+            <button class="emoji-btn" onclick="addEmoji('✌️')">✌️</button>
+            <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+            <button class="emoji-btn" onclick="addEmoji('🙌')">🙌</button>
+            <button class="emoji-btn" onclick="addEmoji('✨')">✨</button>
+            <button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
+            <button class="emoji-btn" onclick="addEmoji('💫')">💫</button>
         </div>
         
-        <div class="info-box" id="infoBox">
-            🚀 Нажмите кнопку ниже чтобы сгенерировать сообщение через NVIDIA AI
+        <div class="message-box empty" id="messageBox">
+            Нажмите кнопку ниже
         </div>
         
-        <div id="errorContainer"></div>
-        
-        <div class="message-card">
-            <div class="message-label">💬 Сообщение для отправки</div>
-            <div class="message-text" id="messageText">
-                <span class="message-placeholder">Нажмите "Сгенерировать через NVIDIA AI"</span>
-            </div>
-        </div>
-        
-        <button class="btn btn-primary" id="generateBtn" onclick="requestGeneration()">
-            ✨ Сгенерировать через NVIDIA AI
+        <button class="btn-main" id="mainBtn" onclick="generateAndCopy()">
+            📋 Сгенерировать и копировать
         </button>
         
-        <button class="btn btn-success hidden" id="copyBtn" onclick="copyAndNext()" disabled>
-            📋 Копировать и получить новое
-        </button>
-    </div>
-    
-    <!-- Экран загрузки -->
-    <div id="loadingScreen" class="hidden">
-        <div class="loading">
-            <div class="spinner"></div>
-            <p id="loadingText">Отправляем запрос боту...</p>
-            <p style="font-size: 12px; color: var(--hint-color); margin-top: 8px;">
-                Бот делает запрос к nvidia/nemotron-3-super-120b-a12b
-            </p>
+        <button class="btn-reset" onclick="resetUsed()">↻ Сбросить использованные (если закончились)</button>
+        
+        <div class="history">
+            <h3>📜 История</h3>
+            <div id="historyList"></div>
         </div>
     </div>
     
-    <!-- Экран успеха -->
-    <div id="successScreen" class="hidden">
-        <div class="success-animation">
-            <div class="success-icon">✅</div>
-            <h2>Скопировано!</h2>
-            <p>+1 к касаниям</p>
-        </div>
-    </div>
+    <div class="copied-toast" id="toast">✓ Скопировано!</div>
+    <div class="limit-toast" id="limitToast">⚠️ Все сообщения использованы! Нажмите сброс</div>
 
     <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        // 70 уникальных сообщений (без "Привет", только "Здравствуйте" и "Добрый день")
+        const messages = [
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите в личные сообщения — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите в личные сообщения — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Пишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нашей компании. Пишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите в личные сообщения — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите в личные сообщения — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Напишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нам. Напишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите в ЛС — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите в ЛС — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Пишите в ЛС — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нашей компании. Пишите в ЛС — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите в ЛС — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите в ЛС — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Напишите в ЛС — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нам. Напишите в ЛС — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Пишите в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нашей компании. Пишите в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нам. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите, пожалуйста, в личные сообщения — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите, пожалуйста, в личные сообщения — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите, пожалуйста, в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите, пожалуйста, в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Напишите, пожалуйста, в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нам. Напишите, пожалуйста, в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Пожалуйста, напишите в личные сообщения — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Пожалуйста, напишите в личные сообщения — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей организации. Напишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль понравился нашей организации. Напишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите нам в личные сообщения — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите нам в личные сообщения — у нас есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Пишите в ЛС — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нашей команде. Пишите в ЛС — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Пишите в ЛС — у нас есть интересное предложение для вас",
+            "Добрый день! Ваш профиль понравился нам. Пишите в ЛС — у нас есть интересное предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите в личные сообщения — у нас есть интересное предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите в личные сообщения — у нас есть интересное предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Ждем вас в личных сообщениях — есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Ждем вас в личных сообщениях — есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите в личные сообщения — хотим сделать предложение",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите в личные сообщения — хотим сделать предложение",
+            
+            "Здравствуйте! Ваш профиль привлек нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль привлек нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль оказался нам интересен. Напишите в личные сообщения — есть предложение",
+            "Добрый день! Ваш профиль оказался нам интересен. Напишите в личные сообщения — есть предложение",
+            
+            "Здравствуйте! Ваш профиль зацепил нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль зацепил нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль понравился нам. Напишите в личные сообщения — есть интересное предложение по сотрудничеству",
+            "Добрый день! Ваш профиль понравился нам. Напишите в личные сообщения — есть интересное предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Будем рады сообщению в ЛС — есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Будем рады сообщению в ЛС — есть предложение",
+            
+            "Здравствуйте! Ваш профиль понравился нашей команде. Напишите в личные сообщения — у нас есть вам предложение",
+            "Добрый день! Ваш профиль понравился нашей команде. Напишите в личные сообщения — у нас есть вам предложение",
+            
+            "Здравствуйте! Ваш профиль заинтересовал нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            "Добрый день! Ваш профиль заинтересовал нас. Напишите в личные сообщения — у нас есть предложение для вас",
+            
+            "Здравствуйте! Ваш профиль впечатлил нас. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            "Добрый день! Ваш профиль впечатлил нас. Напишите в личные сообщения — есть предложение по сотрудничеству",
+            
+            "Здравствуйте! Ваш профиль понравился нашей компании. Напишите в лички — у нас есть предложение",
+            "Добрый день! Ваш профиль понравился нашей компании. Напишите в лички — у нас есть предложение"
+        ];
         
-        // Состояние
+        const USED_KEY = 'usedMessageIndices70';
         let currentMessage = '';
-        let stats = {
-            todayTouches: 0,
-            totalTouches: 0,
-            totalMessages: 0
-        };
         
-        // Применение темы
-        function applyTheme() {
-            const theme = tg.themeParams;
-            const root = document.documentElement;
-            
-            if (theme.bg_color) root.style.setProperty('--tg-theme-bg-color', theme.bg_color);
-            if (theme.text_color) root.style.setProperty('--tg-theme-text-color', theme.text_color);
-            if (theme.secondary_bg_color) root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color);
-            if (theme.button_color) root.style.setProperty('--tg-theme-button-color', theme.button_color);
-            if (theme.button_text_color) root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color);
-            if (theme.hint_color) root.style.setProperty('--tg-theme-hint-color', theme.hint_color);
-            
-            tg.setHeaderColor(theme.bg_color || '#f5f5f5');
-            tg.setBackgroundColor(theme.bg_color || '#f5f5f5');
+        function getUsedIndices() {
+            const saved = localStorage.getItem(USED_KEY);
+            return saved ? JSON.parse(saved) : [];
         }
         
-        applyTheme();
-        tg.onEvent('themeChanged', applyTheme);
+        function markUsed(index) {
+            const used = getUsedIndices();
+            if (!used.includes(index)) {
+                used.push(index);
+                localStorage.setItem(USED_KEY, JSON.stringify(used));
+            }
+            updateProgress();
+        }
         
-        // Инициализация
-        function init() {
-            // Загружаем статистику из URL (от бота)
-            const urlParams = new URLSearchParams(window.location.search);
-            const msgFromUrl = urlParams.get('msg');
-            const statsFromUrl = urlParams.get('stats');
+        function resetUsed() {
+            localStorage.removeItem(USED_KEY);
+            currentMessage = '';
+            document.getElementById('messageBox').textContent = 'Нажмите кнопку ниже';
+            document.getElementById('messageBox').classList.add('empty');
+            document.getElementById('messageBox').style.color = '';
+            updateProgress();
+            showToast('✓ Сброшено! Все 70 сообщений доступны');
+        }
+        
+        function updateProgress() {
+            const used = getUsedIndices().length;
+            document.getElementById('remainingCount').textContent = messages.length - used;
+            document.getElementById('totalCount').textContent = messages.length;
+        }
+        
+        function getAvailableIndices() {
+            const used = getUsedIndices();
+            return messages.map((_, i) => i).filter(i => !used.includes(i));
+        }
+        
+        async function generateAndCopy() {
+            const available = getAvailableIndices();
             
-            if (statsFromUrl) {
-                try {
-                    stats = JSON.parse(decodeURIComponent(statsFromUrl));
-                    updateStatsDisplay();
-                } catch (e) {
-                    console.log('Ошибка парсинга статистики');
-                }
+            if (available.length === 0) {
+                document.getElementById('messageBox').textContent = '⚠️ Все сообщения использованы! Нажмите сбросить ниже';
+                document.getElementById('messageBox').classList.remove('empty');
+                document.getElementById('messageBox').style.color = '#ff0050';
+                showToastLimit();
+                return;
             }
             
-            // Если есть сообщение в URL (после генерации ботом)
-            if (msgFromUrl) {
-                currentMessage = decodeURIComponent(msgFromUrl);
-                showMessage(currentMessage);
-                document.getElementById('infoBox').innerHTML = '✅ Сообщение сгенерировано через NVIDIA AI!';
+            document.getElementById('messageBox').style.color = '';
+            
+            const index = available[Math.floor(Math.random() * available.length)];
+            const baseMessage = messages[index];
+            
+            const emojis = ['😊', '👋', '✌️', '👍', '🙌', '✨', '🎉', '💫', '🤗', '💖', '🌟', '😉'];
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            currentMessage = `${baseMessage} ${randomEmoji}`;
+            
+            document.getElementById('messageBox').textContent = currentMessage;
+            document.getElementById('messageBox').classList.remove('empty');
+            
+            markUsed(index);
+            
+            try {
+                await navigator.clipboard.writeText(currentMessage);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = currentMessage;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
             }
-        }
-        
-        // Обновление статистики
-        function updateStatsDisplay() {
-            document.getElementById('todayTouches').textContent = stats.todayTouches;
-            document.getElementById('totalTouches').textContent = stats.totalTouches;
-            document.getElementById('totalMessages').textContent = stats.totalMessages;
-        }
-        
-        // Показать ошибку
-        function showError(text) {
-            const container = document.getElementById('errorContainer');
-            container.innerHTML = `<div class="error-message">⚠️ ${text}</div>`;
-            setTimeout(() => container.innerHTML = '', 5000);
-        }
-        
-        // ЗАПРОСИТЬ генерацию у бота (через sendData)
-        function requestGeneration() {
-            showScreen('loadingScreen');
-            document.getElementById('loadingText').textContent = 'Отправляем запрос боту...';
             
-            // Отправляем боту запрос на генерацию
-            tg.sendData(JSON.stringify({
-                action: 'generate'
-            }));
+            showToast('✓ Скопировано!');
+            saveToHistory();
+            incrementStats();
             
-            // Закрываем Web App (бот отправит сообщение с результатом)
             setTimeout(() => {
-                tg.close();
+                window.location.href = 'tiktok://';
             }, 500);
         }
         
-        // Показать сообщение
-        function showMessage(message) {
-            document.getElementById('messageText').textContent = message;
-            document.getElementById('messageText').classList.remove('message-placeholder');
-            document.getElementById('generateBtn').classList.add('hidden');
-            document.getElementById('copyBtn').classList.remove('hidden');
-            document.getElementById('copyBtn').disabled = false;
-            showScreen('mainScreen');
+        function addEmoji(emoji) {
+            if (!currentMessage || currentMessage.startsWith('⚠️')) return;
+            currentMessage += ` ${emoji}`;
+            document.getElementById('messageBox').textContent = currentMessage;
+            navigator.clipboard.writeText(currentMessage);
+            showToast('✓ Скопировано с смайликом!');
         }
         
-        // Копировать и следующее
-        async function copyAndNext() {
-            if (!currentMessage) return;
-            
-            document.getElementById('copyBtn').disabled = true;
-            
-            // Копируем в буфер
-            try {
-                await navigator.clipboard.writeText(currentMessage);
-            } catch (e) {
-                const textarea = document.createElement('textarea');
-                textarea.value = currentMessage;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }
-            
-            // Вибрация
-            tg.HapticFeedback.notificationOccurred('success');
-            
-            // Обновляем статистику локально
-            stats.todayTouches++;
-            stats.totalTouches++;
-            updateStatsDisplay();
-            
-            // Отправляем боту что скопировано
-            tg.sendData(JSON.stringify({
-                action: 'copied',
-                message: currentMessage,
-                stats: stats
-            }));
-            
-            showScreen('successScreen');
-            
-            // Через секунду просим новое
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
             setTimeout(() => {
-                requestGeneration();
-            }, 1500);
+                toast.classList.remove('show');
+            }, 1800);
         }
         
-        // Показать экран
-        function showScreen(screenId) {
-            ['mainScreen', 'loadingScreen', 'successScreen'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
+        function showToastLimit() {
+            const toast = document.getElementById('limitToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        function saveToHistory() {
+            let history = JSON.parse(localStorage.getItem('msgHistory') || '[]');
+            history.unshift({
+                text: currentMessage.substring(0, 45) + (currentMessage.length > 45 ? '...' : ''),
+                time: new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})
             });
-            document.getElementById(screenId).classList.remove('hidden');
+            if (history.length > 10) history = history.slice(0, 10);
+            localStorage.setItem('msgHistory', JSON.stringify(history));
+            renderHistory();
         }
         
-        // Кнопка назад
-        tg.BackButton.onClick(() => tg.close());
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('msgHistory') || '[]');
+            const container = document.getElementById('historyList');
+            container.innerHTML = history.length === 0 
+                ? '<div class="history-item">История пуста</div>'
+                : history.map(h => `
+                    <div class="history-item">
+                        <span>${h.text}</span>
+                        <span class="time">${h.time}</span>
+                    </div>
+                `).join('');
+        }
         
-        // Инициализация
-        init();
+        function incrementStats() {
+            const today = new Date().toDateString();
+            const stats = JSON.parse(localStorage.getItem('msgStats') || '{}');
+            if (stats.date !== today) {
+                stats.date = today;
+                stats.count = 0;
+            }
+            stats.count++;
+            localStorage.setItem('msgStats', JSON.stringify(stats));
+            updateStats();
+        }
+        
+        function updateStats() {
+            const today = new Date().toDateString();
+            const stats = JSON.parse(localStorage.getItem('msgStats') || '{}');
+            document.getElementById('msgCount').textContent = stats.date === today ? stats.count : 0;
+        }
+        
+        updateStats();
+        updateProgress();
+        renderHistory();
     </script>
 </body>
 </html>
